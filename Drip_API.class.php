@@ -197,7 +197,7 @@ Class Drip_Api {
         $api_action="$account_id/subscribers";
         $url=$this->api_end_point.$api_action;
 
-        $res=$this->make_request($url);
+        $res=$this->make_request($url, $params);
 
         if (!empty($res['buffer'])) {
             $raw_json=json_decode($res['buffer'], true);
