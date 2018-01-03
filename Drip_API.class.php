@@ -174,6 +174,45 @@ Class Drip_Api {
     }
 
     /**
+     *
+     * @param array $params
+     * @param array $params
+     */
+    public function get_subscribers($params) {
+        if (empty($params['account_id'])) {
+            throw new Exception("Account ID not specified");
+        }
+
+        $account_id=$params['account_id'];
+        unset($params['account_id']); // clear it from the params
+
+        if (isset($params['status'])) {
+            if (!in_array($params['status'], array('active', 'unsubscribed', 'removed', 'all'))) {
+                throw new Exception("Invalid subscriber status.");
+            }
+        } elseif (0) {
+            $params['status']='active'; // api defaults to all but we want active ones
+        }
+
+        $api_action="$account_id/subscribers";
+        $url=$this->api_end_point.$api_action;
+
+        $res=$this->make_request($url);
+
+        if (!empty($res['buffer'])) {
+            $raw_json=json_decode($res['buffer'], true);
+        }
+
+        $data=empty($raw_json)
+            ? false
+            : empty($raw_json['subscribers'])
+                ? array()
+                : $raw_json['subscribers'][0];
+
+        return $data;
+    }
+
+    /**
      * 
      * @param array $params
      * @param array $params
@@ -598,5 +637,9 @@ Class Drip_Api {
     // tmp
     public function __call($method, $args) {
         return array();
+    }
+
+    public function has_error() {
+        return ($this->error_code!==FALSE && $this->error_code!=='');
     }
 }
